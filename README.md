@@ -34,10 +34,23 @@ siblings and starts playback at that file.
 | `↑` `↓` `k` `j` | move in the playlist (`g`/`G` to the top/bottom)         |
 | `enter`         | play the selected track                                  |
 | `+` / `-`       | volume                                                   |
+| `r`             | cycle repeat: off → all → one                             |
+| `s`             | toggle shuffle                                           |
 | `q` / `esc`     | quit                                                     |
 
 When a track ends the next one starts. A file that fails to play is skipped in
-the direction you last moved.
+the direction you last moved. The playlist header shows the repeat and shuffle
+modes; both start off.
+
+Repeat-all wraps at the playlist boundaries. Repeat-one replays the current
+track when it finishes; manual `n` / `p` still navigate between tracks.
+Shuffle plays each track once per pass, starting at the current track, while
+the displayed list stays sorted. `p` retraces the shuffled order within a pass.
+With repeat-all, each new pass is shuffled again. Turning shuffle off restores
+the natural playback order without interrupting the current track. `enter`
+plays the selected row and continues from its position in the playback order.
+Failed tracks are skipped even in repeat-one; playback stops if every reachable
+track fails, including with repeat-all.
 
 ## Install
 
@@ -120,7 +133,8 @@ what the voice has played, not what was decoded.
   `audio.Prober`) and pass it to `audio.NewPlayer` in `cmd/tplay`.
 - **Different sound backend**: implement `audio.Output`/`audio.Voice`.
 - **Playlist behavior** (shuffle, repeat): extend `playlist.Playlist`; the UI
-  only calls `Next`, `Prev`, `Skip` and `Select`.
+  calls `Advance` for successful completion, `Next` / `Prev` for navigation,
+  `Skip` for failures, and `Select` for a row chosen by the listener.
 
 Every layer is tested against fakes of the layer below it: see the
 `*_test.go` files next to the code.

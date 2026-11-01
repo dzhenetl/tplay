@@ -10,6 +10,8 @@ type keyMap struct {
 	SeekFwd  key.Binding
 	Next     key.Binding
 	Prev     key.Binding
+	Repeat   key.Binding
+	Shuffle  key.Binding
 	Up       key.Binding
 	Down     key.Binding
 	Top      key.Binding
@@ -27,6 +29,8 @@ func defaultKeyMap() keyMap {
 		SeekFwd:  key.NewBinding(key.WithKeys("right", "l"), key.WithHelp("→", "seek")),
 		Next:     key.NewBinding(key.WithKeys("n"), key.WithHelp("n/p", "track")),
 		Prev:     key.NewBinding(key.WithKeys("p"), key.WithHelp("p", "prev")),
+		Repeat:   key.NewBinding(key.WithKeys("r"), key.WithHelp("r", "repeat")),
+		Shuffle:  key.NewBinding(key.WithKeys("s"), key.WithHelp("s", "shuffle")),
 		Up:       key.NewBinding(key.WithKeys("up", "k"), key.WithHelp("↑/↓", "select")),
 		Down:     key.NewBinding(key.WithKeys("down", "j"), key.WithHelp("↓", "select")),
 		Top:      key.NewBinding(key.WithKeys("home", "g")),
@@ -41,7 +45,7 @@ func defaultKeyMap() keyMap {
 // ShortHelp implements help.KeyMap. Paired keys show up once, under a
 // combined label like "←/→".
 func (k keyMap) ShortHelp() []key.Binding {
-	return []key.Binding{k.Pause, k.SeekBack, k.Next, k.Play, k.VolUp, k.Quit}
+	return []key.Binding{k.Pause, k.SeekBack, k.Next, k.Play, k.VolUp, k.Repeat, k.Shuffle, k.Quit}
 }
 
 // FullHelp implements help.KeyMap.
@@ -49,6 +53,6 @@ func (k keyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
 		{k.Pause, k.SeekBack, k.SeekFwd, k.Next, k.Prev},
 		{k.Up, k.Down, k.Top, k.Bottom, k.Play},
-		{k.VolUp, k.VolDown, k.Quit},
+		{k.VolUp, k.VolDown, k.Repeat, k.Shuffle, k.Quit},
 	}
 }

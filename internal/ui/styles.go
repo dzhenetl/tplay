@@ -15,6 +15,7 @@ var (
 
 func newHelp() help.Model {
 	h := help.New()
+	h.ShortSeparator = " "
 	h.Styles.ShortKey = lipgloss.NewStyle()
 	h.Styles.ShortDesc = dimStyle
 	h.Styles.ShortSeparator = dimStyle

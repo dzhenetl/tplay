@@ -26,7 +26,12 @@ func (m *Model) View() string {
 	add("")
 	add(m.progressLine(width))
 	add("")
-	add(dimStyle.Render(fmt.Sprintf("Playlist %d/%d", m.playlist.Index()+1, m.playlist.Len())))
+	shuffle := "off"
+	if m.playlist.Shuffled() {
+		shuffle = "on"
+	}
+	add(dimStyle.Render(fmt.Sprintf("Playlist %d/%d  repeat: %s  shuffle: %s",
+		m.playlist.Index()+1, m.playlist.Len(), m.playlist.Repeat(), shuffle)))
 	for _, row := range m.playlistRows(max(m.height-chromeRows, 1)) {
 		add(row)
 	}

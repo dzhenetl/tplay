@@ -136,6 +136,126 @@ func TestVolumeKeys(t *testing.T) {
 	}
 }
 
+func TestModeKeysPreservePlaybackAndShowIndicators(t *testing.T) {
+	m, p := newTestModel(t, 1, "a.ogg", "b.ogg", "c.ogg")
+	for _, mode := range []string{"all", "one", "off"} {
+		press(m, "r")
+		if !strings.Contains(m.View(), "repeat: "+mode) {
+			t.Fatalf("view lacks repeat mode %q:\n%s", mode, m.View())
+		}
+	}
+	for _, mode := range []string{"on", "off"} {
+		press(m, "s")
+		if !strings.Contains(m.View(), "shuffle: "+mode) {
+			t.Fatalf("view lacks shuffle mode %q:\n%s", mode, m.View())
+		}
+	}
+	if len(p.loaded) != 1 || m.playlist.Index() != 1 || m.cursor != 1 {
+		t.Fatal("mode toggles disturbed playback/selection")
+	}
+}
+
+func TestRepeatKeysControlCompletionAndManualNext(t *testing.T) {
+	m, p := newTestModel(t, 1, "a.ogg", "b.ogg")
+	press(m, "r")
+	finish(m, p, nil)
+	if m.ended || lastLoaded(p) != "/music/a.ogg" {
+		t.Fatal("repeat-all did not wrap after EOF")
+	}
+	press(m, "r")
+	finish(m, p, nil)
+	if m.ended || lastLoaded(p) != "/music/a.ogg" || len(p.loaded) != 3 {
+		t.Fatal("repeat-one did not reload after EOF")
+	}
+	press(m, "n")
+	if lastLoaded(p) != "/music/b.ogg" {
+		t.Fatal("manual next did not override repeat-one")
+	}
+	press(m, "r")
+	finish(m, p, nil)
+	if !m.ended {
+		t.Fatal("repeat-off did not stop at the end")
+	}
+}
+
+func TestRepeatSkipsBrokenTracksAndStopsWhenAllFail(t *testing.T) {
+	for _, shuffle := range []bool{false, true} {
+		for _, names := range [][]string{{"a.ogg"}, {"a.ogg", "b.ogg", "c.ogg"}} {
+			m, p := newTestModel(t, 0, names...)
+			press(m, "r")
+			if shuffle {
+				press(m, "s")
+			}
+			for range len(names) + 2 {
+				finish(m, p, errors.New("broken"))
+			}
+			if !m.ended || len(p.loaded) != len(names) {
+				t.Fatalf("all-broken playlist: ended=%v loaded=%v", m.ended, p.loaded)
+			}
+			if lastLoaded(p) != m.playlist.Current().Path {
+				t.Fatal("stopped playlist points at a track other than the last loaded one")
+			}
+			press(m, " ")
+			if m.ended || len(p.loaded) != len(names)+1 {
+				t.Fatal("space did not allow retry after all tracks failed")
+			}
+			for range len(names) {
+				finish(m, p, errors.New("still broken"))
+			}
+			if !m.ended || len(p.loaded) != 2*len(names) {
+				t.Fatalf("retry did not try every track once: %v", p.loaded)
+			}
+		}
+	}
+	m, p := newTestModel(t, 0, "broken.ogg", "good.ogg")
+	press(m, "r")
+	press(m, "r")
+	finish(m, p, errors.New("broken"))
+	finish(m, p, nil)
+	if lastLoaded(p) != "/music/good.ogg" || len(p.loaded) != 3 || m.ended {
+		t.Fatal("repeat-one did not skip failure and repeat the good track")
+	}
+}
+
+func TestSingleTrackRepeatReloadsOnEveryFinish(t *testing.T) {
+	m, p := newTestModel(t, 0, "a.ogg")
+	press(m, "s")
+	press(m, "r")
+	for _, mode := range []string{"all", "one"} {
+		before := len(p.loaded)
+		for range 3 {
+			finish(m, p, nil)
+		}
+		if m.ended || len(p.loaded) != before+3 {
+			t.Fatalf("single track did not repeat in %s", mode)
+		}
+		press(m, "r")
+	}
+}
+
+func TestShuffleCompletionAndRowSelection(t *testing.T) {
+	m, p := newTestModel(t, 0, "a.ogg", "b.ogg", "c.ogg", "d.ogg")
+	press(m, "s")
+	seen := map[string]bool{lastLoaded(p): true}
+	for range 3 {
+		finish(m, p, nil)
+		if seen[lastLoaded(p)] {
+			t.Fatal("shuffle repeated a track before completing the pass")
+		}
+		seen[lastLoaded(p)] = true
+	}
+	finish(m, p, nil)
+	if !m.ended {
+		t.Fatal("shuffle with repeat-off did not stop")
+	}
+	press(m, "g")
+	press(m, "down")
+	press(m, "enter")
+	if m.ended || lastLoaded(p) != "/music/b.ogg" || m.cursor != 1 {
+		t.Fatal("shuffle changed row selection identity")
+	}
+}
+
 func TestViewShowsTrackAndTimes(t *testing.T) {
 	m, p := newTestModel(t, 0, "01 Song.ogg", "02 Other.ogg")
 	p.status = audio.Status{Position: 65 * time.Second, Duration: 3 * time.Minute, Volume: 0.8}
