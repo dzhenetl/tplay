@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-11-01
+
+### Added
+
+- `r` cycles repeat off, all and one. Repeat-all wraps at playlist boundaries;
+  repeat-one replays the current track when it finishes, while `n`/`p` still
+  navigate between tracks. Failed files are skipped, and playback stops if
+  every reachable track fails, even with repeat enabled.
+- `s` toggles shuffle, playing each track once per pass without reordering the
+  displayed list. Previous retraces the shuffled order within a pass;
+  repeat-all starts a fresh shuffled pass. Toggling shuffle keeps the current
+  track playing.
+- The playlist header shows repeat and shuffle modes; both are off by default.
+
 ## [0.4.0] - 2026-10-30
 
 ### Added
@@ -64,6 +78,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI on GitHub Actions runs `make lint` and `make test` on pushes to `main` and
   on pull requests.
 
+[0.5.0]: https://github.com/dzhenetl/tplay/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/dzhenetl/tplay/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/dzhenetl/tplay/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/dzhenetl/tplay/compare/v0.1.1...v0.2.0
