@@ -95,7 +95,7 @@ func (m *Model) onTick() tea.Cmd {
 		if m.playlist.Skip() {
 			return m.load()
 		}
-	} else if m.playlist.Next() {
+	} else if m.playlist.Advance() {
 		return m.load()
 	}
 	m.ended = true
@@ -110,6 +110,7 @@ func (m *Model) onKey(msg tea.KeyMsg) tea.Cmd {
 		return tea.Quit
 	case key.Matches(msg, k.Pause):
 		if m.ended {
+			m.playlist.Select(m.playlist.Index())
 			return m.load()
 		}
 		m.player.TogglePause()
@@ -126,6 +127,10 @@ func (m *Model) onKey(msg tea.KeyMsg) tea.Cmd {
 			return m.load()
 		}
 		m.player.Seek(0)
+	case key.Matches(msg, k.Repeat):
+		m.playlist.CycleRepeat()
+	case key.Matches(msg, k.Shuffle):
+		m.playlist.ToggleShuffle()
 	case key.Matches(msg, k.Up):
 		m.cursor = max(m.cursor-1, 0)
 	case key.Matches(msg, k.Down):
