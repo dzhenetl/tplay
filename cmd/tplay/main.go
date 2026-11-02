@@ -45,7 +45,15 @@ func main() {
 	}
 }
 
-const usage = "usage: tplay [-r] [audio file or directory]\n       tplay --version\n\n  -r  include audio files from subdirectories (directory targets only)"
+const usage = `usage: tplay [-r] [audio file or directory]
+       tplay --help
+       tplay --version
+
+Without a target, play the current directory.
+
+  -r          include audio files from subdirectories (directory targets only)
+  -h, --help  show this help and exit
+  --version   print version and exit`
 
 type options struct {
 	target    string

@@ -13,10 +13,14 @@ Decoding is done by `ffmpeg`, so any format it supports plays.
 
 ```sh
 tplay [-r] [audio file or directory]
+tplay --help
 tplay --version
 ```
 
 Without an argument, `tplay` plays the current directory.
+
+Use `tplay --help` (or `tplay -h`) to show usage and `tplay --version` to
+print the version. Both commands exit without starting playback.
 
 Use `tplay -r music/` to include audio files from all subdirectories, or `tplay -r`
 to scan the current directory recursively. Tracks are sorted naturally by path,
@@ -95,6 +99,11 @@ ALSA headers are required.
 make test     # unit tests; the ffmpeg ones are skipped without ffmpeg
 make install  # builds into ~/.local/bin/tplay
 ```
+
+`make build` and `make install` embed the version from `git describe`, including
+the commit distance and dirty marker when applicable. Override it with
+`make build VERSION=1.2.3`. Release binaries embed the release version; builds
+installed with `go install ...@version` use the Go module version when available.
 
 ### Releasing
 
