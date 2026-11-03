@@ -97,8 +97,33 @@ ALSA headers are required.
 
 ```sh
 make test     # unit tests; the ffmpeg ones are skipped without ffmpeg
-make install  # builds into ~/.local/bin/tplay
+make build   # builds ./tplay
+make install PREFIX="$HOME/.local"  # installs into ~/.local/bin/tplay
 ```
+
+`make install` builds the binary and installs it with mode `755` into
+`$(PREFIX)/bin/tplay`. The default prefix is `/usr/local`; installing there
+usually requires elevated permissions:
+
+```sh
+sudo make install
+```
+
+For package staging, `DESTDIR` is prepended to the prefix:
+
+```sh
+make install DESTDIR="$PWD/stage" PREFIX=/usr
+# installs stage/usr/bin/tplay
+```
+
+Remove the installed binary with `make uninstall`, using the same `PREFIX` and
+`DESTDIR` values as for installation, for example:
+
+```sh
+make uninstall PREFIX="$HOME/.local"
+```
+
+Uninstall leaves the containing directory and other files untouched.
 
 `make build` and `make install` embed the version from `git describe`, including
 the commit distance and dirty marker when applicable. Override it with

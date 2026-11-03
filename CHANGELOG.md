@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `make uninstall` removes the installed `tplay` binary without removing its
+  directory or other files.
+- `DESTDIR` support for staging source installations when packaging.
+
+### Changed
+
+- `make install` builds locally and installs with mode `755` into `$(PREFIX)/bin`.
+  The default `PREFIX` is now `/usr/local`; use `PREFIX="$HOME/.local"` for the
+  previous per-user location. Install and uninstall support paths with spaces.
+
 ## [0.5.1] - 2026-11-02
 
 ### Changed
@@ -87,6 +101,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI on GitHub Actions runs `make lint` and `make test` on pushes to `main` and
   on pull requests.
 
+[Unreleased]: https://github.com/dzhenetl/tplay/compare/v0.5.1...HEAD
 [0.5.1]: https://github.com/dzhenetl/tplay/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/dzhenetl/tplay/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/dzhenetl/tplay/compare/v0.3.0...v0.4.0
