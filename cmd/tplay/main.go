@@ -17,6 +17,7 @@ import (
 	"github.com/dzhenetl/tplay/internal/audio/ffmpeg"
 	"github.com/dzhenetl/tplay/internal/audio/otoout"
 	"github.com/dzhenetl/tplay/internal/playlist"
+	"github.com/dzhenetl/tplay/internal/state"
 	"github.com/dzhenetl/tplay/internal/ui"
 )
 
@@ -101,6 +102,22 @@ func run(opts options) error {
 		return err
 	}
 	player := audio.NewPlayer(ffmpeg.Decoder{}, ffmpeg.Prober{}, output, audio.DefaultFormat)
+	defer player.Stop()
+	statePath, stateErr := state.Path()
+	if stateErr != nil {
+		fmt.Fprintln(os.Stderr, "tplay: cannot locate volume state:", stateErr)
+	} else {
+		volume, loadErr := state.Load(statePath)
+		if loadErr != nil {
+			fmt.Fprintln(os.Stderr, "tplay: cannot restore volume:", loadErr)
+		}
+		player.SetVolume(volume)
+	}
 	_, err = tea.NewProgram(ui.New(player, pl), tea.WithAltScreen()).Run()
+	if stateErr == nil {
+		if saveErr := state.Save(statePath, player.Status().Volume); saveErr != nil {
+			fmt.Fprintln(os.Stderr, "tplay: cannot save volume:", saveErr)
+		}
+	}
 	return err
 }
