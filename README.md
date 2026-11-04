@@ -42,6 +42,12 @@ siblings and starts playback at that file.
 | `s`             | toggle shuffle                                           |
 | `q` / `esc`     | quit                                                     |
 
+Volume is saved on exit and restored before playback on the next launch.
+State is stored in `$XDG_CONFIG_HOME/tplay/state.json`, or
+`~/.config/tplay/state.json` when `XDG_CONFIG_HOME` is unset or relative.
+Without valid saved state, volume starts at 100%. State read/write failures
+produce a warning and do not prevent playback. Track position is not saved.
+
 When a track ends the next one starts. A file that fails to play is skipped in
 the direction you last moved. The playlist header shows the repeat and shuffle
 modes; both start off.
