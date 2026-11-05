@@ -32,10 +32,14 @@ func (m *Model) View() string {
 	}
 	add(dimStyle.Render(fmt.Sprintf("Playlist %d/%d  repeat: %s  shuffle: %s",
 		m.playlist.Index()+1, m.playlist.Len(), m.playlist.Repeat(), shuffle)))
-	for _, row := range m.playlistRows(max(m.height-chromeRows, 1)) {
+	helpView := m.help.View(m.keys)
+	helpRows := strings.Split(helpView, "\n")
+	for _, row := range m.playlistRows(max(m.height-chromeRows-(len(helpRows)-1), 1)) {
 		add(row)
 	}
-	add(m.help.View(m.keys))
+	for _, row := range helpRows {
+		add(row)
+	}
 	if m.err != "" {
 		add(errStyle.Render(m.err))
 	}

@@ -105,6 +105,8 @@ func (m *Model) onTick() tea.Cmd {
 func (m *Model) onKey(msg tea.KeyMsg) tea.Cmd {
 	k := m.keys
 	switch {
+	case key.Matches(msg, k.Help):
+		m.help.ShowAll = !m.help.ShowAll
 	case key.Matches(msg, k.Quit):
 		m.player.Stop()
 		return tea.Quit
