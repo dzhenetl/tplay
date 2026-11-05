@@ -280,3 +280,26 @@ func TestFormatTime(t *testing.T) {
 		}
 	}
 }
+
+func TestHelpToggle(t *testing.T) {
+	m, p := newTestModel(t, 0, "a.ogg", "b.ogg")
+	m.Update(tea.WindowSizeMsg{Width: 120, Height: 20})
+	before := m.View()
+	press(m, "?")
+	view := m.View()
+	for _, want := range []string{"home/g", "end/G", "top", "bottom", "?"} {
+		if !strings.Contains(view, want) {
+			t.Errorf("expanded help lacks %q:\n%s", want, view)
+		}
+	}
+	if lines := strings.Count(view, "\n") + 1; lines != 19 {
+		t.Errorf("expanded view has %d lines, want 19", lines)
+	}
+	if len(p.loaded) != 1 || m.cursor != 0 {
+		t.Fatal("help disturbed playback or selection")
+	}
+	press(m, "?")
+	if m.View() != before {
+		t.Fatal("second ? did not restore compact view")
+	}
+}

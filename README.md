@@ -40,6 +40,7 @@ siblings and starts playback at that file.
 | `+` / `-`       | volume                                                   |
 | `r`             | cycle repeat: off → all → one                             |
 | `s`             | toggle shuffle                                           |
+| `?`             | toggle full keyboard help                                |
 | `q` / `esc`     | quit                                                     |
 
 Volume is saved on exit and restored before playback on the next launch.
